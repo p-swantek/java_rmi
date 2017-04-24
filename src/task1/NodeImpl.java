@@ -6,7 +6,23 @@ import java.util.Map;
 import java.util.Set;
 
 public class NodeImpl implements Node {
+
+    private static final long serialVersionUID = 1L;
     private final Set<Node> nodes = new HashSet<Node>();
+    private int nodeId; //add an id number for each node
+
+    public NodeImpl(int id) {
+        nodeId = id;
+    }
+
+    /**
+     * String representation of a Node, will include the Node's id
+     * 
+     */
+    @Override
+    public String toString() {
+        return String.format("n:%d", nodeId);
+    }
 
     @Override
     public Set<Node> getNeighbors() {
