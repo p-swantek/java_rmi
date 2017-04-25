@@ -1,138 +1,30 @@
 package task2;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
 /**
- * Server that will wait for clients to connect using TCP. When a client
- * connects, the client will send an array of Nodes to the server which
- * represent a graph. The server will then run the searchBenchMark method on
- * this graph, and send the result back to the client.
- * 
+ *
  * @author Peter Swantek
  *
  */
-public class Server {
+public class Server extends UnicastRemoteObject implements GraphSearcher {
 
-    public static void main(String[] args) throws IOException {
+    private static final long serialVersionUID = 1L;
+    private static final Random random = new Random();
+    private static final Searcher searcher = new SearcherImpl();
 
-        if (args.length != 1) {
-            System.out.println("Usage: $java Server <port number>");
-            System.exit(1);
-        }
-
-        int port = Integer.parseInt(args[0]);
-
-        ServerSocket sock = new ServerSocket(port);
-
-        System.out.println(String.format("Server started...listening on port: %d", port));
-
-        while (true) {
-
-            Socket clientConn = sock.accept();
-
-            System.out.println("Incoming client connection accepted! Handling the connection...");
-
-            Thread t = new Thread(new ConnectionHandler(clientConn));
-
-            t.start();
-
-        }
-
-    }
-}
-
-/**
- * Handles any client that connects to the server. Will obtain the graph of
- * nodes from the client and perform the search. After the search is done, will
- * send the result back to the client
- * 
- * @author Peter Swantek
- *
- */
-class ConnectionHandler implements Runnable {
-
-    private static final int NUM_SEARCHES = 50; // How many searches to perform
-
-    private final Random random;
-    private final Searcher searcher;
-    private final Socket sock;
-
-    public ConnectionHandler(Socket s) {
-        random = new Random();
-        searcher = new SearcherImpl();
-        sock = s;
+    public Server() throws RemoteException {
+        super();
     }
 
     @Override
-    public void run() {
-
-        processRequest();
-
-    }
-
-    private void processRequest() {
-
-        // Get a reference to the socket's input and output streams.
-        //inputstream from the socket, transmits data from the socket
-        //outputstream that will transmit data to the socket
-
-        try (InputStream is = sock.getInputStream();
-                OutputStream os = sock.getOutputStream();
-                ObjectInputStream objIn = new ObjectInputStream(is);
-                ObjectOutputStream objOut = new ObjectOutputStream(os);) {
-
-            Node[] graph = (Node[]) objIn.readObject();
-
-            Map<Node, Map<Node, Integer>> result = searchBenchmark(NUM_SEARCHES, graph);
-
-            objOut.writeObject(result);
-            objOut.flush();
-        }
-
-        catch (IOException e) {
-            System.out.println("IO error occured while processing a client connection...");
-            e.printStackTrace();
-        }
-
-        catch (ClassNotFoundException e) {
-            System.out.println("IO error occured while processing a client connection...");
-            e.printStackTrace();
-        }
-
-        finally {
-
-            try {
-
-                sock.close();
-            }
-
-            catch (IOException e) {
-                System.out.println("IO error occured while closing the client connection...");
-                e.printStackTrace();
-            }
-        }
-
-    }
-
-    /**
-     * Runs a quick measurement on the graph.
-     * 
-     * @param howMany the amount of searches to do
-     * @param nodes an array of nodes that was sent from the client, run search
-     *            on these nodes
-     * @return a mapping of each node to a mapping of the nodes this node was
-     *         connected to and the distance between them.
-     */
-    private Map<Node, Map<Node, Integer>> searchBenchmark(int howMany, Node[] nodes) {
+    public Map<Node, Map<Node, Integer>> searchBenchmark(int howMany, Node[] nodes) throws RemoteException {
         // Display measurement header.
         System.out.printf("%7s %8s %13s %13s\n", "Attempt", "Distance", "Time", "TTime");
 
@@ -182,4 +74,24 @@ class ConnectionHandler implements Runnable {
         return result;
     }
 
+    public static void main(String[] args) {
+
+        if (System.getSecurityManager() == null) {
+            System.setSecurityManager(new SecurityManager());
+        }
+
+        String name = "GraphSearcher";
+
+        try {
+            GraphSearcher searcher = new Server();
+            Registry registry = LocateRegistry.getRegistry();
+            registry.rebind(name, searcher);
+            System.out.println("GraphSearcher bound");
+        }
+
+        catch (RemoteException e) {
+            System.out.println("Got a RemoteException");
+        }
+
+    }
 }

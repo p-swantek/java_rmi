@@ -1,10 +1,9 @@
 package task2;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.Socket;
-import java.net.UnknownHostException;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.util.Map;
 import java.util.Random;
 
@@ -13,6 +12,7 @@ public class Client {
     // How many nodes and how many edges to create.
     private static final int GRAPH_NODES = 10;
     private static final int GRAPH_EDGES = 30;
+    private static final int NUM_SEARCHES = 50;
     private static final Random random = new Random();
 
     private static Node[] nodes;
@@ -81,46 +81,41 @@ public class Client {
 
     public static void main(String[] args) {
 
-        if (args.length != 2) {
-            System.out.println("Usage: $java Client <hostname> <port number>");
+        if (args.length != 1) {
+            System.out.println("Usage: $java Client <hostname>");
             System.exit(1);
         }
 
         String host = args[0];
-        int port = Integer.parseInt(args[1]);
 
         createNodes(GRAPH_NODES);
         connectSomeNodes(GRAPH_EDGES);
 
-        try (Socket sock = new Socket(host, port);
-                ObjectOutputStream objOut = new ObjectOutputStream(sock.getOutputStream());
-                ObjectInputStream objIn = new ObjectInputStream(sock.getInputStream());) {
+        if (System.getSecurityManager() == null) {
+            System.setSecurityManager(new SecurityManager());
+        }
 
-            objOut.writeObject(nodes);
-            objOut.flush();
+        try {
+            String name = "GraphSearcher";
+            Registry registry = LocateRegistry.getRegistry(args[0]);
 
-            Map<Node, Map<Node, Integer>> result = (Map<Node, Map<Node, Integer>>) objIn.readObject();
+            GraphSearcher searcher = (GraphSearcher) registry.lookup(name);
+
+            Map<Node, Map<Node, Integer>> result = searcher.searchBenchmark(NUM_SEARCHES, nodes);
 
             printMapping(result);
 
         }
 
-        catch (UnknownHostException e) {
-            System.out.println("Error creating socket, host is unknown.");
-            System.exit(1);
-
+        catch (RemoteException e) {
+            System.err.println("Got a RemoteException");
+            e.printStackTrace();
         }
 
-        catch (IOException e) {
-            System.out.println("Error creating socket, IO error occurred.");
-            System.exit(1);
-        }
-
-        catch (ClassNotFoundException e) {
-            System.out.println("Error when deserializing the result.");
-            System.exit(1);
+        catch (NotBoundException e) {
+            System.err.println("Got an error when performing the registry lookup");
+            e.printStackTrace();
         }
 
     }
-
 }
