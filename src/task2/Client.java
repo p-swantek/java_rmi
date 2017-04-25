@@ -11,7 +11,7 @@ public class Client {
 
     // How many nodes and how many edges to create.
     private static final int GRAPH_NODES = 10;
-    private static final int GRAPH_EDGES = 30;
+    private static final int GRAPH_EDGES = 40;
     private static final int NUM_SEARCHES = 50;
     private static final Random random = new Random();
 
@@ -86,14 +86,12 @@ public class Client {
             System.exit(1);
         }
 
-        String host = args[0];
-
         createNodes(GRAPH_NODES);
         connectSomeNodes(GRAPH_EDGES);
 
-        if (System.getSecurityManager() == null) {
-            System.setSecurityManager(new SecurityManager());
-        }
+        //if (System.getSecurityManager() == null) {
+        //   System.setSecurityManager(new SecurityManager());
+        //}
 
         try {
             String name = "GraphSearcher";
@@ -108,7 +106,7 @@ public class Client {
         }
 
         catch (RemoteException e) {
-            System.err.println("Got a RemoteException");
+            System.out.println("Got a RemoteException");
             e.printStackTrace();
         }
 

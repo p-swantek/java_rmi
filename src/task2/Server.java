@@ -76,21 +76,22 @@ public class Server extends UnicastRemoteObject implements GraphSearcher {
 
     public static void main(String[] args) {
 
-        if (System.getSecurityManager() == null) {
-            System.setSecurityManager(new SecurityManager());
-        }
+        //if (System.getSecurityManager() == null) {
+        // System.setSecurityManager(new SecurityManager());
+        // }
 
         String name = "GraphSearcher";
-
+        System.out.println("Server started, attempting to create registry and bind the GraphSearcher...");
         try {
             GraphSearcher searcher = new Server();
-            Registry registry = LocateRegistry.getRegistry();
+            Registry registry = LocateRegistry.createRegistry(1099);
             registry.rebind(name, searcher);
-            System.out.println("GraphSearcher bound");
+            System.out.println("GraphSearcher sucessfully bound!");
         }
 
         catch (RemoteException e) {
             System.out.println("Got a RemoteException");
+            e.printStackTrace();
         }
 
     }
