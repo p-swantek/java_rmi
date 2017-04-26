@@ -20,7 +20,7 @@ import java.util.Random;
  * @author Peter Swantek
  *
  */
-public class Server {
+public class ServerTask1 {
 
     public static void main(String[] args) throws IOException {
 

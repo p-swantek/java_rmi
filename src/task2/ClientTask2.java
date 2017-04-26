@@ -1,4 +1,4 @@
-package task3;
+package task2;
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -7,7 +7,7 @@ import java.rmi.registry.Registry;
 import java.util.Map;
 import java.util.Random;
 
-public class Client {
+public class ClientTask2 {
 
     // How many nodes and how many edges to create.
     private static final int GRAPH_NODES = 10;
@@ -94,12 +94,12 @@ public class Client {
         //}
 
         try {
-            String name = "GetSearcher";
+            String name = "GraphSearcher";
             Registry registry = LocateRegistry.getRegistry(args[0]);
 
-            GetSearcher getSearcher = (GetSearcher) registry.lookup(name);
+            GraphSearcher searcher = (GraphSearcher) registry.lookup(name);
 
-            Map<Node, Map<Node, Integer>> result = getSearcher.getSearcher().searchBenchmark(NUM_SEARCHES, nodes);
+            Map<Node, Map<Node, Integer>> result = searcher.searchBenchmark(NUM_SEARCHES, nodes);
 
             printMapping(result);
 

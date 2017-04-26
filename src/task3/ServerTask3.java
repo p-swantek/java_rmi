@@ -13,11 +13,11 @@ import java.util.Random;
  * @author Peter Swantek
  *
  */
-public class Server extends UnicastRemoteObject implements GetSearcher {
+public class ServerTask3 extends UnicastRemoteObject implements GetSearcher {
 
     private static final long serialVersionUID = 1L;
 
-    public Server() throws RemoteException {
+    public ServerTask3() throws RemoteException {
         super();
     }
 
@@ -35,7 +35,7 @@ public class Server extends UnicastRemoteObject implements GetSearcher {
         String name = "GetSearcher";
         System.out.println("Server started, attempting to create registry and bind the GetSearcher...");
         try {
-            GetSearcher searcher = new Server();
+            GetSearcher searcher = new ServerTask3();
             Registry registry = LocateRegistry.createRegistry(1099);
             registry.rebind(name, searcher);
             System.out.println("GetSearcher sucessfully bound!");

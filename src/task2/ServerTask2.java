@@ -13,13 +13,13 @@ import java.util.Random;
  * @author Peter Swantek
  *
  */
-public class Server extends UnicastRemoteObject implements GraphSearcher {
+public class ServerTask2 extends UnicastRemoteObject implements GraphSearcher {
 
     private static final long serialVersionUID = 1L;
     private static final Random random = new Random();
     private static final Searcher searcher = new SearcherImpl();
 
-    public Server() throws RemoteException {
+    public ServerTask2() throws RemoteException {
         super();
     }
 
@@ -83,7 +83,7 @@ public class Server extends UnicastRemoteObject implements GraphSearcher {
         String name = "GraphSearcher";
         System.out.println("Server started, attempting to create registry and bind the GraphSearcher...");
         try {
-            GraphSearcher searcher = new Server();
+            GraphSearcher searcher = new ServerTask2();
             Registry registry = LocateRegistry.createRegistry(1099);
             registry.rebind(name, searcher);
             System.out.println("GraphSearcher sucessfully bound!");
