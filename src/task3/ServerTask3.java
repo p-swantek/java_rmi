@@ -28,9 +28,10 @@ public class ServerTask3 extends UnicastRemoteObject implements GetSearcher {
 
     public static void main(String[] args) {
 
-        //if (System.getSecurityManager() == null) {
-        // System.setSecurityManager(new SecurityManager());
-        // }
+        if (System.getSecurityManager() == null) {
+
+            System.setSecurityManager(new SecurityManager());
+        }
 
         String name = "GetSearcher";
         System.out.println("Server started, attempting to create registry and bind the GetSearcher...");

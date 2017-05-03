@@ -89,9 +89,11 @@ public class ClientTask2 {
         createNodes(GRAPH_NODES);
         connectSomeNodes(GRAPH_EDGES);
 
-        //if (System.getSecurityManager() == null) {
-        //   System.setSecurityManager(new SecurityManager());
-        //}
+        if (System.getSecurityManager() == null) {
+
+            System.setSecurityManager(new SecurityManager());
+
+        }
 
         try {
             String name = "GraphSearcher";

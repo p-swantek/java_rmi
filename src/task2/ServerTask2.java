@@ -76,9 +76,11 @@ public class ServerTask2 extends UnicastRemoteObject implements GraphSearcher {
 
     public static void main(String[] args) {
 
-        //if (System.getSecurityManager() == null) {
-        // System.setSecurityManager(new SecurityManager());
-        // }
+        if (System.getSecurityManager() == null) {
+
+            System.setSecurityManager(new SecurityManager());
+
+        }
 
         String name = "GraphSearcher";
         System.out.println("Server started, attempting to create registry and bind the GraphSearcher...");
