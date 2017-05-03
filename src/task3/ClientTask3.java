@@ -7,6 +7,14 @@ import java.rmi.registry.Registry;
 import java.util.Map;
 import java.util.Random;
 
+/**
+ * Client that will use RMI to obtain a remote reference to an object that will
+ * then send over a GraphSearcher object. The client will then use this
+ * GraphSearcher object to run the search benchmark method locally.
+ * 
+ * @author Peter Swantek
+ *
+ */
 public class ClientTask3 {
 
     // How many nodes and how many edges to create.
@@ -15,7 +23,7 @@ public class ClientTask3 {
     private static final int NUM_SEARCHES = 50;
     private static final Random random = new Random();
 
-    private static Node[] nodes;
+    private static Node[] nodes; //graph, the nodes are not serializable
 
     /**
      * Creates nodes of a graph.
@@ -82,14 +90,16 @@ public class ClientTask3 {
 
     public static void main(String[] args) {
 
+        //make sure a host name is supplied
         if (args.length != 1) {
             System.out.println("Usage: $java Client <hostname>");
             System.exit(1);
         }
 
-        createNodes(GRAPH_NODES);
-        connectSomeNodes(GRAPH_EDGES);
+        createNodes(GRAPH_NODES); //create the graph
+        connectSomeNodes(GRAPH_EDGES); //connect the graph
 
+        //set up the security manager
         if (System.getSecurityManager() == null) {
 
             System.setSecurityManager(new SecurityManager());
@@ -98,13 +108,14 @@ public class ClientTask3 {
 
         try {
             String name = "GetSearcher";
-            Registry registry = LocateRegistry.getRegistry(args[0]);
+            Registry registry = LocateRegistry.getRegistry(args[0]); //get the registry at the given hostname
 
-            GetSearcher getSearcher = (GetSearcher) registry.lookup(name);
+            GetSearcher getSearcher = (GetSearcher) registry.lookup(name); //get a remote reference to a GetSearcher object
 
+            //use the GetSearcher object to obtain a GraphSearcher object, then use this GraphSearcher to execute the search benchmark method
             Map<Node, Map<Node, Integer>> result = getSearcher.getSearcher().searchBenchmark(NUM_SEARCHES, nodes);
 
-            printMapping(result);
+            printMapping(result); //print the results out
 
         }
 

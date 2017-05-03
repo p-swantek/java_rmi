@@ -24,24 +24,26 @@ public class ServerTask1 {
 
     public static void main(String[] args) throws IOException {
 
+        //make sure a port number is supplied
         if (args.length != 1) {
             System.out.println("Usage: $java Server <port number>");
             System.exit(1);
         }
 
-        int port = Integer.parseInt(args[0]);
+        int port = Integer.parseInt(args[0]); //get the port the server should listen on
 
-        ServerSocket sock = new ServerSocket(port);
+        ServerSocket sock = new ServerSocket(port); //create a socket for that port
 
         System.out.println(String.format("Server started...listening on port: %d", port));
 
+        //loop forever waiting for clients to connect
         while (true) {
 
-            Socket clientConn = sock.accept();
+            Socket clientConn = sock.accept(); //block until a client connects
 
             System.out.println("Incoming client connection accepted! Handling the connection...");
 
-            Thread t = new Thread(new ConnectionHandler(clientConn));
+            Thread t = new Thread(new ConnectionHandler(clientConn)); //create a thread to handle the connection
 
             t.start();
 
@@ -66,6 +68,11 @@ class ConnectionHandler implements Runnable {
     private final Searcher searcher;
     private final Socket sock;
 
+    /**
+     * Creates a new connection handler to deal with a connection on a socket
+     * 
+     * @param s the socket thru which the client connected
+     */
     public ConnectionHandler(Socket s) {
         random = new Random();
         searcher = new SearcherImpl();
@@ -75,10 +82,17 @@ class ConnectionHandler implements Runnable {
     @Override
     public void run() {
 
-        processRequest();
+        processRequest(); //process the client connection
 
     }
 
+    /**
+     * Process the client connection. will establish input/output streams from
+     * the clients socket. Will read in the graph from the client, then perform
+     * the search benchmark. Finally, the hashmap of results will be shipped
+     * back to the client.
+     * 
+     */
     private void processRequest() {
 
         // Get a reference to the socket's input and output streams.
@@ -90,11 +104,11 @@ class ConnectionHandler implements Runnable {
                 ObjectInputStream objIn = new ObjectInputStream(is);
                 ObjectOutputStream objOut = new ObjectOutputStream(os);) {
 
-            SerializableNode[] graph = (SerializableNode[]) objIn.readObject();
+            SerializableNode[] graph = (SerializableNode[]) objIn.readObject(); //obtain the graph from the client
 
-            Map<SerializableNode, Map<SerializableNode, Integer>> result = searchBenchmark(NUM_SEARCHES, graph);
+            Map<SerializableNode, Map<SerializableNode, Integer>> result = searchBenchmark(NUM_SEARCHES, graph); //run search and accumulate results
 
-            objOut.writeObject(result);
+            objOut.writeObject(result); //send the result back to the client
             objOut.flush();
         }
 
@@ -112,7 +126,7 @@ class ConnectionHandler implements Runnable {
 
             try {
 
-                sock.close();
+                sock.close(); //once done, close the connection to the client
             }
 
             catch (IOException e) {
@@ -164,6 +178,8 @@ class ConnectionHandler implements Runnable {
             else {
                 // Print the measurement result.
                 System.out.printf("%7d %8d %13d %13d\n", i, distance, durationNs / 1000, transitiveDurationNs / 1000);
+
+                //update the map of results
                 if (result.containsKey(nodes[idxFrom])) {
                     Map<SerializableNode, Integer> currMap = result.get(nodes[idxFrom]);
                     currMap.put(nodes[idxTo], distance);

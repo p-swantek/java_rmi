@@ -7,6 +7,15 @@ import java.rmi.registry.Registry;
 import java.util.Map;
 import java.util.Random;
 
+/**
+ * This client will use RMI in order to obtain a remote reference to a
+ * GraphSearcher on the server. Will then send the graph to this graphsearcher
+ * which will then run the search benchmark method on the server. The server
+ * will then send back the map of results back to the client
+ * 
+ * @author Peter Swantek
+ *
+ */
 public class ClientTask2 {
 
     // How many nodes and how many edges to create.
@@ -15,7 +24,7 @@ public class ClientTask2 {
     private static final int NUM_SEARCHES = 50;
     private static final Random random = new Random();
 
-    private static SerializableNode[] nodes;
+    private static SerializableNode[] nodes; //graph to send
 
     /**
      * Creates nodes of a graph.
@@ -82,14 +91,16 @@ public class ClientTask2 {
 
     public static void main(String[] args) {
 
+        //make sure the host name of the server is supplied
         if (args.length != 1) {
             System.out.println("Usage: $java Client <hostname>");
             System.exit(1);
         }
 
-        createNodes(GRAPH_NODES);
-        connectSomeNodes(GRAPH_EDGES);
+        createNodes(GRAPH_NODES); //create the graph nodes
+        connectSomeNodes(GRAPH_EDGES); //connect the nodes
 
+        //get the security manager
         if (System.getSecurityManager() == null) {
 
             System.setSecurityManager(new SecurityManager());
@@ -98,13 +109,13 @@ public class ClientTask2 {
 
         try {
             String name = "GraphSearcher";
-            Registry registry = LocateRegistry.getRegistry(args[0]);
+            Registry registry = LocateRegistry.getRegistry(args[0]); //look up the remote registry on the server
 
-            GraphSearcher searcher = (GraphSearcher) registry.lookup(name);
+            GraphSearcher searcher = (GraphSearcher) registry.lookup(name); //look up a reference to the remote object
 
-            Map<SerializableNode, Map<SerializableNode, Integer>> result = searcher.searchBenchmark(NUM_SEARCHES, nodes);
+            Map<SerializableNode, Map<SerializableNode, Integer>> result = searcher.searchBenchmark(NUM_SEARCHES, nodes); //RMI to run the search benchmark
 
-            printMapping(result);
+            printMapping(result); //print the results obtained
 
         }
 

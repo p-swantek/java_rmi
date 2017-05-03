@@ -7,6 +7,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+/**
+ * Concrete implementation of the searcher interface
+ * 
+ *
+ */
 class SearcherImpl implements Searcher {
     /**
      * A trivial distance measurement algorithm

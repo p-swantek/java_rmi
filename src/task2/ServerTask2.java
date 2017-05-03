@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Random;
 
 /**
+ * Server that will export remote objects for a client to access using RMI.
  *
  * @author Peter Swantek
  *
@@ -76,6 +77,7 @@ public class ServerTask2 extends UnicastRemoteObject implements GraphSearcher {
 
     public static void main(String[] args) {
 
+        //get the security manager
         if (System.getSecurityManager() == null) {
 
             System.setSecurityManager(new SecurityManager());
@@ -85,9 +87,9 @@ public class ServerTask2 extends UnicastRemoteObject implements GraphSearcher {
         String name = "GraphSearcher";
         System.out.println("Server started, attempting to create registry and bind the GraphSearcher...");
         try {
-            GraphSearcher searcher = new ServerTask2();
-            Registry registry = LocateRegistry.createRegistry(1099);
-            registry.rebind(name, searcher);
+            GraphSearcher searcher = new ServerTask2(); //create the remote object
+            Registry registry = LocateRegistry.createRegistry(1099); //start up the remote registry and have it listen on port 1099
+            registry.rebind(name, searcher); //bind the remote object in the registry
             System.out.println("GraphSearcher sucessfully bound!");
         }
 

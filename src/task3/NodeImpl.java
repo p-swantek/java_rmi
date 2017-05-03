@@ -7,7 +7,6 @@ import java.util.Set;
 
 public class NodeImpl implements Node {
 
-    private static final long serialVersionUID = 1L;
     private final Set<Node> nodes = new HashSet<Node>();
     private int nodeId; //add an id number for each node
 

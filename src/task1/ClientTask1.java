@@ -8,6 +8,16 @@ import java.net.UnknownHostException;
 import java.util.Map;
 import java.util.Random;
 
+/**
+ * Client that will connect to a server using TCP. Once connected, the client
+ * will send over a serialized array of Nodes that represents a graph. The
+ * server will receive the graph, run the search benchmark on this graph, and
+ * set back a serialized HashMap of results back to the client. The client will
+ * then print out this mapping of accumulated results
+ * 
+ * @author Peter Swantek
+ *
+ */
 public class ClientTask1 {
 
     // How many nodes and how many edges to create.
@@ -83,27 +93,29 @@ public class ClientTask1 {
     @SuppressWarnings("unchecked")
     public static void main(String[] args) {
 
+        //make sure the host and port number to connect to are given as command line args
         if (args.length != 2) {
             System.out.println("Usage: $java Client <hostname> <port number>");
             System.exit(1);
         }
 
-        String host = args[0];
-        int port = Integer.parseInt(args[1]);
+        String host = args[0]; //get the host name of the server
+        int port = Integer.parseInt(args[1]); //get the port the server is listening on
 
-        createNodes(GRAPH_NODES);
-        connectSomeNodes(GRAPH_EDGES);
+        createNodes(GRAPH_NODES); //create the nodes of the graph
+        connectSomeNodes(GRAPH_EDGES); //establish connections between nodes of the graph
 
+        //establish a socket connection to the server, get the object input/output streams for this socket then
         try (Socket sock = new Socket(host, port);
                 ObjectOutputStream objOut = new ObjectOutputStream(sock.getOutputStream());
                 ObjectInputStream objIn = new ObjectInputStream(sock.getInputStream());) {
 
-            objOut.writeObject(nodes);
+            objOut.writeObject(nodes); //send the array of nodes through the socket
             objOut.flush();
 
-            Map<SerializableNode, Map<SerializableNode, Integer>> result = (Map<SerializableNode, Map<SerializableNode, Integer>>) objIn.readObject();
+            Map<SerializableNode, Map<SerializableNode, Integer>> result = (Map<SerializableNode, Map<SerializableNode, Integer>>) objIn.readObject(); //get back the results from the server
 
-            printMapping(result);
+            printMapping(result); //print out the results contained in the hashmap
 
         }
 

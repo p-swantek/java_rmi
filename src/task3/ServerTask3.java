@@ -9,6 +9,9 @@ import java.util.Map;
 import java.util.Random;
 
 /**
+ * Remote object that clients will access using RMI, clients will use the
+ * getSearcher method in order to have a GraphSearch object get sent over the
+ * network back to the client
  *
  * @author Peter Swantek
  *
@@ -21,6 +24,10 @@ public class ServerTask3 extends UnicastRemoteObject implements GetSearcher {
         super();
     }
 
+    /**
+     * Returns an object that implements the GraphSearcher interface
+     * 
+     */
     @Override
     public GraphSearcher getSearcher() throws RemoteException {
         return new GraphSearcherImpl();
@@ -28,6 +35,7 @@ public class ServerTask3 extends UnicastRemoteObject implements GetSearcher {
 
     public static void main(String[] args) {
 
+        //set up the security manager
         if (System.getSecurityManager() == null) {
 
             System.setSecurityManager(new SecurityManager());
@@ -36,9 +44,9 @@ public class ServerTask3 extends UnicastRemoteObject implements GetSearcher {
         String name = "GetSearcher";
         System.out.println("Server started, attempting to create registry and bind the GetSearcher...");
         try {
-            GetSearcher searcher = new ServerTask3();
-            Registry registry = LocateRegistry.createRegistry(1099);
-            registry.rebind(name, searcher);
+            GetSearcher searcher = new ServerTask3(); //create the remote object
+            Registry registry = LocateRegistry.createRegistry(1099); //start up the remote registry on port 1099
+            registry.rebind(name, searcher); //bind the remote object in the registry
             System.out.println("GetSearcher sucessfully bound!");
         }
 
@@ -51,6 +59,14 @@ public class ServerTask3 extends UnicastRemoteObject implements GetSearcher {
 
 }
 
+/**
+ * Provides an implementation of the GraphSearcher interface, will be serialized
+ * and sent over the network to a client that can then execute the search
+ * benchmark method locally on a graph
+ * 
+ * @author Peter Swantek
+ *
+ */
 class GraphSearcherImpl implements GraphSearcher {
 
     private static final long serialVersionUID = 1L;
