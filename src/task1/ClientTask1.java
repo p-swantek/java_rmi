@@ -33,6 +33,7 @@ public class ClientTask1 {
     /**
      * Creates a fully connected graph.
      */
+    @SuppressWarnings("unused")
     private void connectAllNodes() {
         for (int idxFrom = 0; idxFrom < nodes.length; idxFrom++) {
             for (int idxTo = idxFrom + 1; idxTo < nodes.length; idxTo++) {
@@ -79,6 +80,7 @@ public class ClientTask1 {
 
     }
 
+    @SuppressWarnings("unchecked")
     public static void main(String[] args) {
 
         if (args.length != 2) {
