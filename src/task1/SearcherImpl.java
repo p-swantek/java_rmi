@@ -16,11 +16,11 @@ class SearcherImpl implements Searcher {
      * node is visited or no node is left.
      */
     @Override
-    public int getDistance(Node from, Node to) {
+    public int getDistance(SerializableNode from, SerializableNode to) {
         // visited keeps the nodes visited in past steps.
-        Set<Node> visited = new HashSet<Node>();
+        Set<SerializableNode> visited = new HashSet<SerializableNode>();
         // boundary keeps the nodes visited in current step.
-        Set<Node> boundary = new HashSet<Node>();
+        Set<SerializableNode> boundary = new HashSet<SerializableNode>();
 
         int distance = 0;
 
@@ -33,17 +33,17 @@ class SearcherImpl implements Searcher {
             if (boundary.isEmpty())
                 return (Searcher.DISTANCE_INFINITE);
 
-            Set<Node> traversing = new HashSet<Node>();
+            Set<SerializableNode> traversing = new HashSet<SerializableNode>();
 
             // Nodes visited in current step become nodes visited in past steps.
             visited.addAll(boundary);
 
             // Collect a set of immediate neighbors of nodes visited in current step.
-            for (Node node : boundary)
+            for (SerializableNode node : boundary)
                 traversing.addAll(node.getNeighbors());
 
             // Out of immediate neighbors, consider only those not yet visited.
-            for (Iterator<Node> node = traversing.iterator(); node.hasNext();) {
+            for (Iterator<SerializableNode> node = traversing.iterator(); node.hasNext();) {
                 if (visited.contains(node.next()))
                     node.remove();
             }
@@ -65,11 +65,11 @@ class SearcherImpl implements Searcher {
      * visited or no node is left.
      */
     @Override
-    public int getTransitiveDistance(int distance, Node from, Node to) {
+    public int getTransitiveDistance(int distance, SerializableNode from, SerializableNode to) {
         // visited keeps the nodes visited in past steps.
-        Set<Node> visited = new HashSet<Node>();
+        Set<SerializableNode> visited = new HashSet<SerializableNode>();
         // boundary keeps the nodes visited in current step.
-        Map<Node, Integer> boundary = new HashMap<Node, Integer>();
+        Map<SerializableNode, Integer> boundary = new HashMap<SerializableNode, Integer>();
 
         // We start from the source node.
         boundary.put(from, 0);
@@ -81,21 +81,21 @@ class SearcherImpl implements Searcher {
                 return (Searcher.DISTANCE_INFINITE);
             }
 
-            Map<Node, Integer> traversing = new HashMap<Node, Integer>();
+            Map<SerializableNode, Integer> traversing = new HashMap<SerializableNode, Integer>();
 
             // Collect transitive neighbors of nodes visited in current step
-            for (Entry<Node, Integer> currentTuple : boundary.entrySet()) {
-                final Node currentNode = currentTuple.getKey();
+            for (Entry<SerializableNode, Integer> currentTuple : boundary.entrySet()) {
+                final SerializableNode currentNode = currentTuple.getKey();
                 final int currentDistance = currentTuple.getValue();
                 if (visited.contains(currentNode)) {
                     continue;
                 }
 
-                Map<Node, Integer> partialGraph = currentNode.getTransitiveNeighbors(distance);
+                Map<SerializableNode, Integer> partialGraph = currentNode.getTransitiveNeighbors(distance);
 
-                for (Entry<Node, Integer> searchedTuple : partialGraph.entrySet()) {
+                for (Entry<SerializableNode, Integer> searchedTuple : partialGraph.entrySet()) {
                     // Check whether the node is already traversed
-                    final Node searchedNode = searchedTuple.getKey();
+                    final SerializableNode searchedNode = searchedTuple.getKey();
                     final int dist = currentDistance + searchedTuple.getValue();
 
                     if (traversing.containsKey(searchedNode)) {
@@ -110,7 +110,7 @@ class SearcherImpl implements Searcher {
                 visited.add(currentNode);
             }
 
-            for (Entry<Node, Integer> entry : traversing.entrySet()) {
+            for (Entry<SerializableNode, Integer> entry : traversing.entrySet()) {
                 if (entry.getKey().equals(to)) {
                     return entry.getValue();
                 }

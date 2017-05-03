@@ -90,9 +90,9 @@ class ConnectionHandler implements Runnable {
                 ObjectInputStream objIn = new ObjectInputStream(is);
                 ObjectOutputStream objOut = new ObjectOutputStream(os);) {
 
-            Node[] graph = (Node[]) objIn.readObject();
+            SerializableNode[] graph = (SerializableNode[]) objIn.readObject();
 
-            Map<Node, Map<Node, Integer>> result = searchBenchmark(NUM_SEARCHES, graph);
+            Map<SerializableNode, Map<SerializableNode, Integer>> result = searchBenchmark(NUM_SEARCHES, graph);
 
             objOut.writeObject(result);
             objOut.flush();
@@ -132,12 +132,12 @@ class ConnectionHandler implements Runnable {
      * @return a mapping of each node to a mapping of the nodes this node was
      *         connected to and the distance between them.
      */
-    private Map<Node, Map<Node, Integer>> searchBenchmark(int howMany, Node[] nodes) {
+    private Map<SerializableNode, Map<SerializableNode, Integer>> searchBenchmark(int howMany, SerializableNode[] nodes) {
         // Display measurement header.
         System.out.printf("%7s %8s %13s %13s\n", "Attempt", "Distance", "Time", "TTime");
 
         //map of nodes to a mapping of nodes that are connected to the given node as well as the distances for those pairs
-        Map<Node, Map<Node, Integer>> result = new HashMap<>();
+        Map<SerializableNode, Map<SerializableNode, Integer>> result = new HashMap<>();
 
         for (int i = 0; i < howMany; i++) {
 
@@ -165,13 +165,13 @@ class ConnectionHandler implements Runnable {
                 // Print the measurement result.
                 System.out.printf("%7d %8d %13d %13d\n", i, distance, durationNs / 1000, transitiveDurationNs / 1000);
                 if (result.containsKey(nodes[idxFrom])) {
-                    Map<Node, Integer> currMap = result.get(nodes[idxFrom]);
+                    Map<SerializableNode, Integer> currMap = result.get(nodes[idxFrom]);
                     currMap.put(nodes[idxTo], distance);
                     result.put(nodes[idxFrom], currMap);
                 }
 
                 else {
-                    Map<Node, Integer> map = new HashMap<>();
+                    Map<SerializableNode, Integer> map = new HashMap<>();
                     map.put(nodes[idxTo], distance);
                     result.put(nodes[idxFrom], map);
                 }

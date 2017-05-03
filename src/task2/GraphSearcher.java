@@ -6,6 +6,6 @@ import java.util.Map;
 
 public interface GraphSearcher extends Remote {
 
-    Map<Node, Map<Node, Integer>> searchBenchmark(int howMany, Node[] nodes) throws RemoteException;
+    Map<SerializableNode, Map<SerializableNode, Integer>> searchBenchmark(int howMany, SerializableNode[] nodes) throws RemoteException;
 
 }

@@ -15,7 +15,7 @@ public class ClientTask2 {
     private static final int NUM_SEARCHES = 50;
     private static final Random random = new Random();
 
-    private static Node[] nodes;
+    private static SerializableNode[] nodes;
 
     /**
      * Creates nodes of a graph.
@@ -23,7 +23,7 @@ public class ClientTask2 {
      * @param howMany
      */
     private static void createNodes(int howMany) {
-        nodes = new Node[howMany];
+        nodes = new SerializableNode[howMany];
 
         for (int i = 0; i < howMany; i++) {
             nodes[i] = new NodeImpl(i);
@@ -61,13 +61,13 @@ public class ClientTask2 {
      * 
      * @param map the result from the server after it finished doing the search
      */
-    private static void printMapping(Map<Node, Map<Node, Integer>> map) {
+    private static void printMapping(Map<SerializableNode, Map<SerializableNode, Integer>> map) {
 
-        for (Node key : map.keySet()) {
+        for (SerializableNode key : map.keySet()) {
 
             System.out.println(key + " has the mapping:");
 
-            for (Map.Entry<Node, Integer> val : map.get(key).entrySet()) {
+            for (Map.Entry<SerializableNode, Integer> val : map.get(key).entrySet()) {
 
                 System.out.println("\t" + val.getKey() + " -> " + val.getValue());
 
@@ -101,7 +101,7 @@ public class ClientTask2 {
 
             GraphSearcher searcher = (GraphSearcher) registry.lookup(name);
 
-            Map<Node, Map<Node, Integer>> result = searcher.searchBenchmark(NUM_SEARCHES, nodes);
+            Map<SerializableNode, Map<SerializableNode, Integer>> result = searcher.searchBenchmark(NUM_SEARCHES, nodes);
 
             printMapping(result);
 

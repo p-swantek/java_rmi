@@ -5,10 +5,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class NodeImpl implements Node {
+public class NodeImpl implements SerializableNode {
 
     private static final long serialVersionUID = 1L;
-    private final Set<Node> nodes = new HashSet<Node>();
+    private final Set<SerializableNode> nodes = new HashSet<SerializableNode>();
     private int nodeId; //add an id number for each node
 
     public NodeImpl(int id) {
@@ -25,27 +25,27 @@ public class NodeImpl implements Node {
     }
 
     @Override
-    public Set<Node> getNeighbors() {
+    public Set<SerializableNode> getNeighbors() {
         return nodes;
     }
 
     @Override
-    public Map<Node, Integer> getTransitiveNeighbors(int distance) {
+    public Map<SerializableNode, Integer> getTransitiveNeighbors(int distance) {
         if (distance <= 0)
             throw new IllegalArgumentException("Argument distance must be positive");
 
-        Map<Node, Integer> nodeToDistance = new HashMap<Node, Integer>();
-        Set<Node> currentLayer = new HashSet<Node>();
+        Map<SerializableNode, Integer> nodeToDistance = new HashMap<SerializableNode, Integer>();
+        Set<SerializableNode> currentLayer = new HashSet<SerializableNode>();
 
         // Initial node at zero-distance
         currentLayer.add(this);
 
         // Closure  for each level of i-distant nodes
         for (int i = 0; i < distance; ++i) {
-            Set<Node> nextLayer = new HashSet<Node>();
+            Set<SerializableNode> nextLayer = new HashSet<SerializableNode>();
 
             // Use nodes which are in the current level 
-            for (Node node : currentLayer) {
+            for (SerializableNode node : currentLayer) {
                 if (!nodeToDistance.containsKey(node)) {
                     nodeToDistance.put(node, i);
                     nextLayer.addAll(node.getNeighbors());
@@ -57,7 +57,7 @@ public class NodeImpl implements Node {
         }
 
         // Handle the last layer
-        for (Node node : currentLayer) {
+        for (SerializableNode node : currentLayer) {
             if (!nodeToDistance.containsKey(node))
                 nodeToDistance.put(node, distance);
         }
@@ -66,7 +66,7 @@ public class NodeImpl implements Node {
     }
 
     @Override
-    public void addNeighbor(Node neighbor) {
+    public void addNeighbor(SerializableNode neighbor) {
         nodes.add(neighbor);
     }
 }
